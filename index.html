@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Компоненты распределённой системы — интеллект-карта</title>
+  <script src="https://unpkg.com/vis-network@9.1.7/dist/vis-network.min.js"></script>
+  <link href="https://unpkg.com/vis-network@9.1.7/dist/vis-network.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 { margin-bottom: 10px; }
+    #network {
+      width: 100%;
+      height: 80vh;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      margin-top: 20px;
+    }
+    .hint { color: #6b7280; font-size: 14px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Интеллект-карта: Компоненты распределённой системы</h1>
+  <p>Построена на GitHub Pages с помощью библиотеки vis-network</p>
+  <div id="network"></div>
+  <div class="hint">Можно перетаскивать узлы и масштабировать колесом мыши.</div>
+
+  <script>
+    // ---------- ДАННЫЕ ДЛЯ КАРТЫ ----------
+    const nodes = new vis.DataSet([
+      { id: 1, label: "Компоненты распределённой системы", shape: "ellipse", color: "#2563eb", font: { color: "white", size: 18 } },
+
+      // Ветка 1 — Серверная часть
+      { id: 2, label: "Серверная часть", color: "#93c5fd" },
+      { id: 3, label: "Сервер приложений" },
+      { id: 4, label: "Обработка запросов" },
+      { id: 5, label: "Управление сессиями" },
+      { id: 6, label: "Взаимодействие с базой данных" },
+      { id: 7, label: "Балансировщик нагрузки" },
+      { id: 8, label: "Round Robin / Least Connections" },
+      { id: 9, label: "Мониторинг состояния узлов" },
+
+      // Ветка 2 — Клиентская часть
+      { id: 10, label: "Клиентская часть", color: "#93c5fd" },
+      { id: 11, label: "Веб-клиент" },
+      { id: 12, label: "Интерфейс пользователя" },
+      { id: 13, label: "REST / gRPC запросы" },
+      { id: 14, label: "Мобильный клиент" },
+      { id: 15, label: "API-взаимодействие" },
+      { id: 16, label: "Кэширование и офлайн-доступ" },
+
+      // Ветка 3 — Службы взаимодействия
+      { id: 17, label: "Службы взаимодействия", color: "#93c5fd" },
+      { id: 18, label: "Система обмена сообщениями" },
+      { id: 19, label: "Очередь сообщений (Kafka, RabbitMQ)" },
+      { id: 20, label: "Подтверждение доставки" },
+      { id: 21, label: "Служба синхронизации времени" },
+      { id: 22, label: "NTP / Lamport" },
+
+      // Ветка 4 — Хранилище данных
+      { id: 23, label: "Хранилище данных", color: "#93c5fd" },
+      { id: 24, label: "Базы данных" },
+      { id: 25, label: "Репликация" },
+      { id: 26, label: "Шардирование" },
+      { id: 27, label: "Консистентность данных" },
+      { id: 28, label: "Кэширование" },
+      { id: 29, label: "Redis / Memcached" },
+      { id: 30, label: "TTL и инвалидация" },
+
+      // Ветка 5 — Инфраструктура и мониторинг
+      { id: 31, label: "Инфраструктура и мониторинг", color: "#93c5fd" },
+      { id: 32, label: "Контейнеризация (Docker)" },
+      { id: 33, label: "Kubernetes Pods" },
+      { id: 34, label: "Мониторинг" },
+      { id: 35, label: "Prometheus / Grafana" },
+      { id: 36, label: "Логирование и трассировка" },
+      { id: 37, label: "ELK / Jaeger" },
+    ]);
+
+    const edges = new vis.DataSet([
+      { from: 1, to: 2 }, { from: 1, to: 10 }, { from: 1, to: 17 }, { from: 1, to: 23 }, { from: 1, to: 31 },
+
+      // Ветка 1
+      { from: 2, to: 3 }, { from: 3, to: 4 }, { from: 3, to: 5 }, { from: 3, to: 6 },
+      { from: 2, to: 7 }, { from: 7, to: 8 }, { from: 7, to: 9 },
+
+      // Ветка 2
+      { from: 10, to: 11 }, { from: 11, to: 12 }, { from: 11, to: 13 },
+      { from: 10, to: 14 }, { from: 14, to: 15 }, { from: 14, to: 16 },
+
+      // Ветка 3
+      { from: 17, to: 18 }, { from: 18, to: 19 }, { from: 18, to: 20 },
+      { from: 17, to: 21 }, { from: 21, to: 22 },
+
+      // Ветка 4
+      { from: 23, to: 24 }, { from: 24, to: 25 }, { from: 24, to: 26 }, { from: 24, to: 27 },
+      { from: 23, to: 28 }, { from: 28, to: 29 }, { from: 28, to: 30 },
+
+      // Ветка 5
+      { from: 31, to: 32 }, { from: 32, to: 33 },
+      { from: 31, to: 34 }, { from: 34, to: 35 },
+      { from: 34, to: 36 }, { from: 36, to: 37 }
+    ]);
+
+    const container = document.getElementById("network");
+    const data = { nodes, edges };
+    const options = {
+      physics: { stabilization: true },
+      layout: { hierarchical: false },
+      nodes: { shape: "box", shadow: true },
+      edges: { smooth: true, color: "#555" },
+      interaction: { dragNodes: true, zoomView: true }
+    };
+
+    new vis.Network(container, data, options);
+  </script>
+</body>
+</html>
